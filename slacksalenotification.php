@@ -63,17 +63,63 @@ class SlackSaleNotification extends Module
         $icon = Configuration::get('SLACKSALENOTIF_ICON');
         $price = Configuration::get('SLACKSALENOTIF_PRICE');
 
-        if ($price == 1)
+        $cart = new Cart($params['cart']->id);
+        $customer = new Customer($cart->id_customer);
+        $amount = $cart->getOrderTotalUsingTaxCalculationMethod($params['cart']->id);
+
+        $attachment = [
+            [
+                "fallback" => $message,
+                "fields" => [
+                    [
+                        "title" => "Amount",
+                        "value" => $amount,
+                        "short" => false,
+                    ],
+                    [
+                        "title" => "Customer",
+                        "value" => $customer->firstname . " " . $customer->lastname,
+                        "short" => false,
+                    ],
+                ],
+            ],
+        ];
+
+        $products = [];
+
+        foreach ($cart->getProducts() as $value)
         {
-            $cart = new Cart();
-            $amount = $cart->getOrderTotalUsingTaxCalculationMethod($params['cart']->id);
-            $message .= ' --- ' . $amount;
+            $product = new Product($value['id_product']);
+
+            $products[] = [
+                "fallback" => $value['name'],
+                "title" => $value['name'],
+                "title_link" => $product->getlink(),
+                "fields" => [
+                    [
+                        "title" => "Quantity",
+                        "value" => $value['quantity'],
+                        "short" => true
+                    ],
+                    [
+                        "title" => "Price",
+                        "value" => $value['total_wt'],
+                        "short" => true
+                    ],
+                    [
+                        "title" => "Attributes",
+                        "value" => $value['attributes'],
+                        "short" => false
+                    ],
+                ],
+            ];
         }
 
         $payload = "payload=" . json_encode([
             "text" => $message,
             "username" => $bot,
             "icon_emoji" => $icon,
+            "attachments" => array_merge($attachment, $products)
         ]);
 
         $ch = curl_init($webhook_url);
