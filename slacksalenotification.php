@@ -39,7 +39,6 @@ class SlackSaleNotification extends Module
             || !Configuration::updateValue('SLACKSALENOTIF_MESSAGE', 'New order')
             || !Configuration::updateValue('SLACKSALENOTIF_BOT', 'PrestaBot')
             || !Configuration::updateValue('SLACKSALENOTIF_ICON', ':tada:')
-            || !Configuration::updateValue('SLACKSALENOTIF_PRICE', '1')
         )
         {
             return false;
@@ -61,7 +60,6 @@ class SlackSaleNotification extends Module
         $message = Configuration::get('SLACKSALENOTIF_MESSAGE');
         $bot = Configuration::get('SLACKSALENOTIF_BOT');
         $icon = Configuration::get('SLACKSALENOTIF_ICON');
-        $price = Configuration::get('SLACKSALENOTIF_PRICE');
 
         $cart = new Cart($params['cart']->id);
         $customer = new Customer($cart->id_customer);
@@ -144,8 +142,7 @@ class SlackSaleNotification extends Module
                 || !Configuration::updateValue('SLACKSALENOTIF_URL', Tools::getValue('SLACKSALENOTIF_URL'))
                 || !Configuration::updateValue('SLACKSALENOTIF_MESSAGE', Tools::getValue('SLACKSALENOTIF_MESSAGE'))
                 || !Configuration::updateValue('SLACKSALENOTIF_BOT', Tools::getValue('SLACKSALENOTIF_BOT'))
-                || !Configuration::updateValue('SLACKSALENOTIF_ICON', Tools::getValue('SLACKSALENOTIF_ICON'))
-                || !Configuration::updateValue('SLACKSALENOTIF_PRICE', Tools::getValue('SLACKSALENOTIF_PRICE_on')))
+                || !Configuration::updateValue('SLACKSALENOTIF_ICON', Tools::getValue('SLACKSALENOTIF_ICON')))
             {
                 $output .= $this->displayError($this->l('There was a problem updating the settings.'));
                 return $output.$this->displayForm();
@@ -199,23 +196,6 @@ class SlackSaleNotification extends Module
                     'required' => true,
                     'desc' => $this->l('The icon of the bot. Example: :tada:'),
                 ],
-                [
-                    'type' => 'checkbox',
-                    'name' => 'SLACKSALENOTIF_PRICE',
-                    'label' => $this->l('Show price'),
-                    'is_bool' => true,
-                    'values' => [
-                        'query' => [
-                            [
-                                'id' => 'on',
-                                'val' => '1',
-                            ],
-                        ],
-                        'id' => 'id',
-                        'name' => 'name',
-                    ],
-                    'desc' => $this->l('Display or not the price of the new order'),
-                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -259,7 +239,6 @@ class SlackSaleNotification extends Module
                 'SLACKSALENOTIF_MESSAGE' => Configuration::get('SLACKSALENOTIF_MESSAGE'),
                 'SLACKSALENOTIF_BOT' => Configuration::get('SLACKSALENOTIF_BOT'),
                 'SLACKSALENOTIF_ICON' => Configuration::get('SLACKSALENOTIF_ICON'),
-                'SLACKSALENOTIF_PRICE_on' => Configuration::get('SLACKSALENOTIF_PRICE'),
             ],
         ];
          
